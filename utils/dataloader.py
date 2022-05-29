@@ -1,18 +1,10 @@
 import os
-import random
-from collections import OrderedDict
 import numpy as np
 import torch
-import torch.nn as nn
-import torch.optim as optim
 from torch.utils.data import DataLoader, Dataset, random_split
 from matplotlib import pyplot as plt
-from matplotlib.backends.backend_agg import FigureCanvasAgg
-from tqdm import tqdm
 import cv2
-import skimage
 from torch.utils.data import Dataset
-from torchvision.transforms import Compose
 
 #torch.set_printoptions(profile="full")
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')

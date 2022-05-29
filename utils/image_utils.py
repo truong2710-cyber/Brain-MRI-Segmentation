@@ -1,11 +1,12 @@
 import numpy as np
 import torch
 import matplotlib.pyplot as plt
-from torch.utils.data import DataLoader
+from torch.utils.data import DataLoader, random_split
 import sys
 #sys.path.insert(0, '..')
 #from dataloader import *
 import os
+from utils.dataloader import MRIDataset
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 def tensor_to_image(tensor):
@@ -35,6 +36,13 @@ def plot_image(number, loader):
         mask = tensor_to_mask(masks[i])
         plt.subplot(2, number, i+1+number)
         plt.imshow(mask)
+    plt.show()
+
+def plot_hist(train_loss, val_loss):
+    plt.plot(train_loss, label='train_loss')
+    plt.plot(val_loss, label='val_loss')
+    plt.legend()
+    plt.title('Loss Plot')
     plt.show()
 
 def test():

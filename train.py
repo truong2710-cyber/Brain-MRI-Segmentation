@@ -9,10 +9,12 @@ import sys
 sys.path.insert(0, '../model')
 #sys.path.insert(0, '../utils')
 from model.unet import *
+from model.unet_plus_plus import *
 from utils.dataloader import *
 from utils.image_utils import *
 
-SAVE_PATH = 'D:\\MRI Segmentation\\checkpoints\\unet'
+SAVE_PATH = {'unet': 'D:\\MRI Segmentation\\checkpoints\\unet', 
+            'unet_plus_plus': 'D:\\MRI Segmentation\\checkpoints\\unet_plus_plus'}
 DATA_PATH = 'D:\\MRI Segmentation\\data\\kaggle_3m'
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
@@ -52,21 +54,23 @@ class DiceBCELoss(nn.Module):
         loss_final = BCE * bce_weight + dice_loss * (1 - bce_weight)
         return loss_final
     
-def train():
+def train(model_name = 'unet', epochs = 20):
     dataset = MRIDataset(DATA_PATH)
     train, val = random_split(dataset, [3600, 329])
     train_loader = DataLoader(dataset=train, batch_size=10,shuffle=True)
     val_loader = DataLoader(dataset=val, batch_size=10)
     
-    model = Unet256()
+    if model_name == 'unet':
+        model = Unet256()
+    elif model_name == 'unet_plus_plus':
+        model = NestedUNet(num_classes=1)
     model.to(device)
-    model.load_state_dict(torch.load(os.path.join(SAVE_PATH, 'best.pth')))
+    model.load_state_dict(torch.load(os.path.join(SAVE_PATH[model_name], 'best.pth')))
 
     criterion = DiceBCELoss()
     learning_rate = 1e-3
     optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
     
-    epochs = 20
     train_loss = []
     val_loss = []
     best_val_loss = float('inf')
@@ -102,15 +106,13 @@ def train():
         print('Validation loss: {}'.format(epoch_val_loss))                                
         val_loss.append(epoch_val_loss)
 
-        torch.save(model.state_dict(), os.path.join(SAVE_PATH, 'epoch_{}.pth'.format(epoch+1)))
+        torch.save(model.state_dict(), os.path.join(SAVE_PATH[model_name], 'epoch_{}.pth'.format(epoch+1)))
         if epoch_val_loss < best_val_loss:
             best_val_loss = epoch_val_loss
-            torch.save(model.state_dict(), os.path.join(SAVE_PATH, 'best.pth'))
+            torch.save(model.state_dict(), os.path.join(SAVE_PATH[model_name], 'best.pth'))
     
     return train_loss, val_loss
 
-def main():
-    train()
-
 if __name__ == '__main__':
-    main()
+    train_loss, val_loss = train(model_name='unet', epochs=20)
+    plot_hist(train_loss, val_loss)
