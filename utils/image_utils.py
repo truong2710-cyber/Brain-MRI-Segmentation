@@ -3,8 +3,8 @@ import torch
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader
 import sys
-sys.path.insert(0, '..')
-from utils.dataloader import *
+#sys.path.insert(0, '..')
+#from dataloader import *
 import os
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
