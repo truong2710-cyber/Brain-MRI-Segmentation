@@ -8,7 +8,7 @@ from torch.utils.data import Dataset
 
 #torch.set_printoptions(profile="full")
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-DATA_PATH = 'D:\MRI Segmentation\data\kaggle_3m'
+DATA_PATH = 'data\kaggle_3m'
 
 class MRIDataset(Dataset):
     def __init__(self, data_path):
@@ -48,6 +48,7 @@ class MRIDataset(Dataset):
 def test():
     dataset = MRIDataset(DATA_PATH)
     print(dataset[134][1])
+    print("Dataset size:", len(dataset))
 
 if __name__ == '__main__':
     test()

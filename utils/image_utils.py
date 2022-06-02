@@ -3,10 +3,8 @@ import torch
 import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, random_split
 import sys
-#sys.path.insert(0, '..')
-#from dataloader import *
 import os
-from utils.dataloader import MRIDataset
+from dataloader import MRIDataset
 os.environ["KMP_DUPLICATE_LIB_OK"] = "TRUE"
 
 def tensor_to_image(tensor):
@@ -46,7 +44,7 @@ def plot_hist(train_loss, val_loss):
     plt.show()
 
 def test():
-    dataset = MRIDataset('D:\MRI Segmentation\data\kaggle_3m')
+    dataset = MRIDataset('data\kaggle_3m')
     train, val = random_split(dataset, [3600, 329])
     train_loader = DataLoader(dataset=train, batch_size=10,shuffle=True)
     val_loader = DataLoader(dataset=val, batch_size=10)

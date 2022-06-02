@@ -46,26 +46,27 @@ class StackDecoder(nn.Module):
             x = self.block(x)
             return x
 
-class Unet256(nn.Module):
-    def __init__(self, input_shape = (3, 256, 256)):
-        super(Unet256, self).__init__()
+class Unet(nn.Module):
+    def __init__(self, in_channel = 3, scale = 'tiny'):
+        super(Unet, self).__init__()
+        if scale == 'tiny':
+            self.num_kernels = [12, 24, 46, 64, 128]
+        elif scale == 'large':
+            self.num_kernels = [64, 128, 256, 512, 1024]
+        self.down1 = StackEncoder(in_channel, self.num_kernels[0], kernel_size=(3,3))  #256
+        self.down2 = StackEncoder(self.num_kernels[0], self.num_kernels[1], kernel_size=(3,3))  # 128
+        self.down3 = StackEncoder(self.num_kernels[1], self.num_kernels[2], kernel_size=(3,3))  # 64
+        self.down4 = StackEncoder(self.num_kernels[2], self.num_kernels[3], kernel_size=(3,3))  # 32
+        self.down5 = StackEncoder(self.num_kernels[3], self.num_kernels[4], kernel_size=(3,3))  #16
         
-        channel, height, width = input_shape
+        self.center = ConvBlock(self.num_kernels[4], self.num_kernels[4], kernel_size=(3,3), padding=1) #16
         
-        self.down1 = StackEncoder(channel, 12, kernel_size=(3,3))  #256
-        self.down2 = StackEncoder(12, 24, kernel_size=(3,3))  # 128
-        self.down3 = StackEncoder(24, 46, kernel_size=(3,3))  # 64
-        self.down4 = StackEncoder(46, 64, kernel_size=(3,3))  # 32
-        self.down5 = StackEncoder(64, 128, kernel_size=(3,3))  #16
-        
-        self.center = ConvBlock(128, 128, kernel_size=(3,3), padding=1) #16
-        
-        self.up5 = StackDecoder(128, 128, 64, kernel_size=(3,3))  #32
-        self.up4 = StackDecoder(64, 64, 46, kernel_size=(3,3)) #64
-        self.up3 = StackDecoder(46, 46, 24, kernel_size=(3,3))
-        self.up2 = StackDecoder(24, 24, 12, kernel_size=(3,3))
-        self.up1 = StackDecoder(12, 12, 12, kernel_size=(3,3))
-        self.conv = nn.Conv2d(12, 1, kernel_size=(1,1), bias=True)
+        self.up5 = StackDecoder(self.num_kernels[4], self.num_kernels[4], self.num_kernels[3], kernel_size=(3,3))  #32
+        self.up4 = StackDecoder(self.num_kernels[3], self.num_kernels[3], self.num_kernels[2], kernel_size=(3,3)) #64
+        self.up3 = StackDecoder(self.num_kernels[2], self.num_kernels[2], self.num_kernels[1], kernel_size=(3,3))
+        self.up2 = StackDecoder(self.num_kernels[1], self.num_kernels[1], self.num_kernels[0], kernel_size=(3,3))
+        self.up1 = StackDecoder(self.num_kernels[0], self.num_kernels[0], self.num_kernels[0], kernel_size=(3,3))
+        self.conv = nn.Conv2d(self.num_kernels[0], 1, kernel_size=(1,1), bias=True)
         
     def forward(self,x):
         down1, out = self.down1(x)  
@@ -87,7 +88,7 @@ class Unet256(nn.Module):
 
 def test():
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-    model = Unet256((3, 256, 256)).to(device)
+    model = Unet(in_channel=3).to(device)
     summary(model, (3, 256, 256))
 
 if __name__ == '__main__':

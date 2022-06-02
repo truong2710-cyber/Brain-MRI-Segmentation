@@ -4,25 +4,35 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import sys
-sys.path.insert(0, '../model')
-#sys.path.insert(0, '../utils')
+sys.path.insert(0, 'model/')
+sys.path.insert(0, 'utils/')
 from model.unet import *
 from model.unet_plus_plus import *
+from model.backboned_unet import *
 from utils.dataloader import *
 from utils.image_utils import *
 
-SAVE_PATH = {'unet': 'D:\\MRI Segmentation\\checkpoints\\unet', 
-            'unet_plus_plus': 'D:\\MRI Segmentation\\checkpoints\\unet_plus_plus'}
-DATA_PATH = 'D:\\MRI Segmentation\\data\\kaggle_3m'
+SAVE_PATH = {'unet': 'checkpoints\\unet', 
+            'unet_plus_plus': 'checkpoints\\unet_plus_plus',
+            'backboned_unet': 'checkpoints\\backboned_unet'}
+DATA_PATH = 'data\\kaggle_3m'
 device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-def eval(number, model_name='unet'):
+def eval(number, model_name='unet', backbone_name='vgg16'):
     if model_name == 'unet':
-        model = Unet256()
+        model = Unet()
     elif model_name == 'unet_plus_plus':
         model = NestedUNet(num_classes=1)
+    elif model_name == 'backboned_unet':
+        model = BackbonedUnet(backbone_name=backbone_name)
     model.to(device)
-    model.load_state_dict(torch.load(os.path.join(SAVE_PATH[model_name], 'best.pth'), map_location=torch.device('cpu')))
+    if model_name != 'backboned_unet':
+        if len(os.listdir(SAVE_PATH[model_name])) > 0:
+            model.load_state_dict(torch.load(os.path.join(SAVE_PATH[model_name], 'best.pth'), map_location=torch.device('cpu')))
+    else:
+        if len(os.listdir(SAVE_PATH[model_name])) > 0:
+            model.load_state_dict(torch.load(os.path.join(SAVE_PATH[model_name], '{}_best.pth'.format(backbone_name)), map_location=torch.device('cpu')))
+
     dataset = MRIDataset(DATA_PATH)
     train, val = random_split(dataset, [3600, 329])
     train_loader = DataLoader(dataset=train, batch_size=10, shuffle=True)
@@ -59,4 +69,4 @@ def eval(number, model_name='unet'):
     plt.show()
 
 if __name__ == '__main__':
-    eval(5, 'unet_plus_plus')
+    eval(5, 'unet')
