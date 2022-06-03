@@ -65,6 +65,19 @@ def get_backbone(name, pretrained=True):
 
 
 class UpsampleBlock(nn.Module):
+    """
+    Upsampling block
+    Input: (B, C_in, W, H)
+    Output: (B, C_out, W*2, H*2)
+    Parametric: 
+        Step 1: Use Transpose Convolution to x2 size -> BatchNorm -> ReLU
+        Step 2: Concatenate the output with the skip connection
+        Step 3: Pass through a Convolution layer to make the output channel C_out
+    Non-parametric:
+        Step 1: Use interpolation to x2 size
+        Step 2: Concatenate the output with the skip connection
+        Step 3: Pass through Conv -> BatchNorm -> ReLU -> Conv -> BatchNorm -> ReLU to make the output channel C_out
+    """
 
     # TODO: separate parametric and non-parametric classes?
     # TODO: skip connection concatenated OR added
@@ -230,6 +243,10 @@ class BackbonedUnet(nn.Module):
 if __name__ == "__main__":
 
     # simple test run
+    backbone,_,_ = get_backbone('vgg19')
+    print(backbone)
+    summary(backbone, (3,256,256))
+    '''
     model = BackbonedUnet(backbone_name='resnet18')
     summary(model, (3, 256, 256))
     criterion = nn.MSELoss()
@@ -245,3 +262,4 @@ if __name__ == "__main__":
             loss.backward()
             optimizer.step()
         print(out.shape)
+    '''
