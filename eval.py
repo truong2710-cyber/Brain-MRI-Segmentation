@@ -6,11 +6,14 @@ import matplotlib.pyplot as plt
 import sys
 sys.path.insert(0, 'model/')
 sys.path.insert(0, 'utils/')
+sys.path.insert(0, 'metric/')
 from model.unet import *
 from model.unet_plus_plus import *
 from model.backboned_unet import *
 from utils.dataloader import *
 from utils.image_utils import *
+from metric.iou import IoU
+from metric.dice_coef import DiceCoefficient
 
 SAVE_PATH = {'unet': 'checkpoints\\unet', 
             'unet_plus_plus': 'checkpoints\\unet_plus_plus',
@@ -49,6 +52,11 @@ def eval(number, model_name='unet', backbone_name='vgg16'):
     for i in range(number):
         _, mask = cv2.threshold(masks[i], 0.7, 1, cv2.THRESH_BINARY)
         thresholded_masks.append(mask)
+
+    iou = IoU()
+    dice_coef = DiceCoefficient()
+    print("Mean IoU:", iou.eval(np.squeeze(true_masks.clone().detach().cpu().numpy()), np.array(thresholded_masks)))
+    print("Mean Dice coefficient:", dice_coef.eval(np.squeeze(true_masks.clone().detach().cpu().numpy()), np.array(thresholded_masks)))
     
     plt.figure(figsize=(20, 20))
     # MRI Scans
@@ -69,4 +77,4 @@ def eval(number, model_name='unet', backbone_name='vgg16'):
     plt.show()
 
 if __name__ == '__main__':
-    eval(5, 'unet')
+    eval(10, 'unet')
