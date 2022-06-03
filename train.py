@@ -61,8 +61,8 @@ def train(model_name = 'unet', epochs = 20, backbone_name = 'resnet50'):
     assert backbone_name in ['resnet18', 'resnet34', 'resnet50', 'resnet101', 'resnet152', 'vgg16', 'vgg19', 'densenet121', 'densenet161', 'densenet169', 'densenet201']
 
     dataset = MRIDataset(DATA_PATH)
-    train, val = random_split(dataset, [3600, 329])
-    train_loader = DataLoader(dataset=train, batch_size=10,shuffle=True)
+    train, val = random_split(dataset, [3600, 329], generator=torch.Generator().manual_seed(0))
+    train_loader = DataLoader(dataset=train, batch_size=10, shuffle=True)
     val_loader = DataLoader(dataset=val, batch_size=10)
     
     if model_name == 'unet':

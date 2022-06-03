@@ -37,9 +37,9 @@ def eval(number, model_name='unet', backbone_name='vgg16'):
             model.load_state_dict(torch.load(os.path.join(SAVE_PATH[model_name], '{}_best.pth'.format(backbone_name)), map_location=torch.device('cpu')))
 
     dataset = MRIDataset(DATA_PATH)
-    train, val = random_split(dataset, [3600, 329])
+    train, val = random_split(dataset, [3600, 329], generator=torch.Generator().manual_seed(0))
     train_loader = DataLoader(dataset=train, batch_size=10, shuffle=True)
-    val_loader = DataLoader(dataset=val, batch_size=10)
+    val_loader = DataLoader(dataset=val, batch_size=10, shuffle=True)
     model.eval()
     iter_ = iter(val_loader)
     images, true_masks = next(iter_)
@@ -77,4 +77,4 @@ def eval(number, model_name='unet', backbone_name='vgg16'):
     plt.show()
 
 if __name__ == '__main__':
-    eval(10, 'unet')
+    eval(10, 'unet_plus_plus')
