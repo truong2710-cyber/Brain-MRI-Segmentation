@@ -159,7 +159,7 @@ class BackbonedUnet(nn.Module):
         decoder_filters_in = [bb_out_chs] + list(decoder_filters[:-1])
         num_blocks = len(self.shortcut_features)
         for i, [filters_in, filters_out] in enumerate(zip(decoder_filters_in, decoder_filters)):
-            print('upsample_blocks[{}] in: {}   out: {}'.format(i, filters_in, filters_out))
+            #print('upsample_blocks[{}] in: {}   out: {}'.format(i, filters_in, filters_out))
             self.upsample_blocks.append(UpsampleBlock(filters_in, filters_out,
                                                       skip_in=shortcut_chs[num_blocks-i-1],
                                                       parametric=parametric_upsampling,
