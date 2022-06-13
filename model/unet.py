@@ -68,7 +68,7 @@ class Unet(nn.Module):
         self.up1 = StackDecoder(self.num_kernels[0], self.num_kernels[0], self.num_kernels[0], kernel_size=(3,3))
         self.conv = nn.Conv2d(self.num_kernels[0], 1, kernel_size=(1,1), bias=True)
         
-    def forward(self,x):
+    def forward(self, x):
         down1, out = self.down1(x)  
         down2, out = self.down2(out)  
         down3, out = self.down3(out)
