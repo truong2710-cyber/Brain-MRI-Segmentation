@@ -87,6 +87,28 @@ def apply_threshold(masks, threshold):
 def main():
     st.title("MRI Segmentation App 🧠")
 
+    # Add description
+    st.markdown("""
+    ## About this App  
+    This application helps **highlight possible tumors or abnormal regions** in MRI scans using deep learning-based segmentation models.  
+
+    ### 🔍 **Features**  
+    - 💡 **AI-powered segmentation** to detect potential abnormalities in MRI scans.  
+    - 🔄 **Choose from multiple segmentation models** (U-Net, U-Net++, and Backboned U-Net).  
+    - ⚡ **Batch processing** for efficient segmentation of multiple images.  
+    - 🎚️ **Adjust segmentation threshold** in real-time for better visualization.  
+    - 🖼️ **View original and segmented images** side by side.  
+
+    ### 🏥 **How to Use**  
+    1. **Upload MRI scans** (JPEG, PNG).  
+    2. **Select a segmentation model** and backbone (if applicable).  
+    3. **Adjust the threshold** to refine the segmentation mask.  
+    4. **Analyze the highlighted areas** that may indicate abnormalities.  
+
+    This tool is designed to assist **researchers, radiologists, and medical students** in MRI analysis.  
+    📌 **Note**: This app is for **educational and research purposes only** and should not be used for medical diagnosis.  
+    """)
+
     # Sidebar - Model Selection
     st.sidebar.header("Model Selection")
     model_name = st.sidebar.selectbox("Choose a model:", ["unet", "unet_plus_plus", "backboned_unet"])
