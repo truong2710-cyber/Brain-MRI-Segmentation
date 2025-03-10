@@ -2,5 +2,5 @@ torch
 torchvision
 torchsummary
 numpy
-opencv-python
+opencv-python-headless
 Pillow
