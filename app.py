@@ -1,7 +1,3 @@
-import asyncio
-import sys
-if sys.platform == "win32":
-    asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
 import streamlit as st
 import torch
 import numpy as np
@@ -11,6 +7,8 @@ import os
 from model.unet import *
 from model.unet_plus_plus import *
 from model.backboned_unet import *
+
+torch.classes.__path__ = [os.path.join(torch.__path__[0], torch.classes.__file__)] 
 
 SAVE_PATH = {
     'unet': os.path.join('checkpoints', 'unet'),
