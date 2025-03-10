@@ -123,8 +123,8 @@ def main():
 
     # Upload multiple MRI images
     uploaded_files = st.file_uploader(
-        "Upload MRI images (JPG, PNG, JPEG)", 
-        type=["jpg", "png", "jpeg"], 
+        "Upload MRI images (JPG, PNG, JPEG, TIF)", 
+        type=["jpg", "png", "jpeg", "tif"], 
         accept_multiple_files=True
     )
 
@@ -145,7 +145,7 @@ def main():
             st.session_state.model_name = model_name
             st.session_state.backbone_name = backbone_name
             st.session_state.uploaded_file_names = new_file_names  # Store file names
-            st.session_state.original_images = [np.array(img) for img in images]
+            st.session_state.original_images = [(img.permute(1, 2, 0).cpu().numpy() * 255).astype(np.uint8) for img in processed_images]
 
         # Sidebar - Threshold Slider
         threshold = st.sidebar.slider("Segmentation Threshold", min_value=0.0, max_value=1.0, value=0.5, step=0.05)
