@@ -14,11 +14,11 @@ from model.backboned_unet import *
 from utils.dataloader import *
 from utils.image_utils import *
 
-SAVE_PATH = {'unet': 'checkpoints\\unet', 
-            'unet_plus_plus': 'checkpoints\\unet_plus_plus',
-            'backboned_unet': 'checkpoints\\backboned_unet'}
-DATA_PATH = 'data\\kaggle_3m'
-device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+SAVE_PATH = {'unet': os.path.join('checkpoints', 'unet'),
+            'unet_plus_plus': os.path.join('checkpoints', 'unet_plus_plus'),
+            'backboned_unet': os.path.join('checkpoints', 'backboned_unet')}
+DATA_PATH = os.path.join('data', 'kaggle_3m')
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
 
 class DiceLoss(nn.Module):
     def __init__(self, weight=None, size_average=True):
